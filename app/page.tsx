@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, useMemo, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useState } from "react";
 
 const movies = [
   {
@@ -37,7 +37,7 @@ const movies = [
   }
 ];
 
-type Step = "invite" | "movies" | "done";
+type Step = "invite" | "movies" | "convince" | "done";
 
 const confettiPieces = [
   { x: -118, y: -126, rotate: -38, color: "#ff7ab6" },
@@ -58,13 +58,17 @@ const formspreeEndpoint = "https://formspree.io/f/xaqgjarp";
 
 export default function Home() {
   const [step, setStep] = useState<Step>("invite");
-  const [noPosition, setNoPosition] = useState({ left: 182, top: 32 });
-  const [noScale, setNoScale] = useState(1);
+  const [introComplete, setIntroComplete] = useState(false);
   const [isCelebrating, setIsCelebrating] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState("");
   const [note, setNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setIntroComplete(true), 9400);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const sparkleText = useMemo(() => {
     return selectedMovie === "Something else"
@@ -72,20 +76,7 @@ export default function Home() {
       : "Optional: add a cinema, time, or snack preference.";
   }, [selectedMovie]);
 
-  function moveNoButton() {
-    const stageWidth = Math.min(window.innerWidth - 44, 460);
-    const buttonWidth = 132 * noScale;
-    const maxLeft = Math.max(0, stageWidth - buttonWidth);
-    const maxTop = 82;
-
-    setNoPosition({
-      left: Math.round(Math.random() * maxLeft),
-      top: Math.round(Math.random() * maxTop)
-    });
-    setNoScale((currentScale) => Math.max(0.48, Number((currentScale - 0.09).toFixed(2))));
-  }
-
-  function sayYes() {
+  function acceptSideRequest() {
     if (isCelebrating) {
       return;
     }
@@ -96,34 +87,26 @@ export default function Home() {
     }, 850);
   }
 
-  async function submitChoice() {
-    if (!selectedMovie) {
-      setError("Pick a movie first, please.");
-      return;
-    }
-
+  async function sendForm(payload: Record<string, string>) {
     setIsSubmitting(true);
     setError("");
 
     try {
-      const payload = {
-        _subject: "Enie picked a movie",
-        movie: selectedMovie,
-        note,
-        from: "Dear Enie movie invite",
-        submittedAt: new Date().toISOString()
-      };
       const response = await fetch(formspreeEndpoint, {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          from: "Dear Enie movie invite",
+          submittedAt: new Date().toISOString(),
+          ...payload
+        })
       });
 
       if (!response.ok) {
-        throw new Error("Could not save the answer.");
+        throw new Error("Could not send the answer.");
       }
 
       setStep("done");
@@ -134,14 +117,71 @@ export default function Home() {
     }
   }
 
+  async function submitChoice() {
+    if (!selectedMovie) {
+      setError("Pick a movie first, please.");
+      return;
+    }
+
+    await sendForm({
+      _subject: "Enie picked a movie",
+      kind: "movie choice",
+      movie: selectedMovie,
+      note
+    });
+  }
+
+  async function submitAvailability(answer: "yes" | "no") {
+    await sendForm({
+      _subject: "Enie answered next week",
+      kind: "next week availability",
+      freeNextWeek: answer
+    });
+  }
+
   if (step === "done") {
     return (
       <main className="page-shell">
         <section className="movie-wrap">
           <div className="thank-you">
-            <h1>yay, saved</h1>
-            <p>Ryan has your movie answer now. This is already a tiny win.</p>
+            <h1>yay, sent</h1>
+            <p>Ryan has the answer now. Tiny mission accomplished.</p>
           </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (step === "convince") {
+    return (
+      <main className="page-shell">
+        <section className="invite-wrap" aria-label="More convincing">
+          <article className="letter compact-letter">
+            <div className="animal-stickers" aria-hidden="true">
+              <span className="animal-sticker dodo-sticker">🦤</span>
+              <span className="animal-sticker mouse-sticker">🐭</span>
+            </div>
+            <p className="question single-question">So... are u free next week?</p>
+            <div className="convince-actions">
+              <button
+                className="cta-button accept-button"
+                disabled={isSubmitting}
+                onClick={() => submitAvailability("yes")}
+                type="button"
+              >
+                yes
+              </button>
+              <button
+                className="cta-button convince-button"
+                disabled={isSubmitting}
+                onClick={() => submitAvailability("no")}
+                type="button"
+              >
+                no
+              </button>
+            </div>
+            {error ? <p className="error-text">{error}</p> : null}
+          </article>
         </section>
       </main>
     );
@@ -218,34 +258,43 @@ export default function Home() {
             ))}
           </div>
         ) : null}
-        <article className="letter">
+        <article className="letter story-letter">
           <div className="animal-stickers" aria-hidden="true">
             <span className="animal-sticker dodo-sticker">🦤</span>
             <span className="animal-sticker mouse-sticker">🐭</span>
           </div>
-          <div className="letter-kicker reveal-line">Dear Enie,</div>
-          <p className="reveal-line">I was wondering...</p>
-          <p className="question reveal-line">do u wanna watch a movie with me this week?</p>
-          <div className="signature reveal-line">Ryan</div>
+          <div className="intro-sequence" aria-hidden={introComplete}>
+            <p className="intro-line intro-line-one">Thanks again for the ice cream 🍦</p>
+            <p className="intro-line intro-line-two">Since you paid last time...</p>
+            <p className="intro-line intro-line-three">I think it’s my turn now. 😌</p>
+          </div>
+          <div className={`reward-page ${introComplete ? "reward-page-visible" : ""}`}>
+            <h1>Reward includes:</h1>
+            <ul>
+              <li>✅ One movie ticket</li>
+              <li>✅ Unlimited popcorn sharing (negotiable)</li>
+              <li>✅ Occasional bad jokes</li>
+            </ul>
+            <div className="letter-divider">⸻</div>
+          </div>
         </article>
 
-        <div className="button-stage" aria-label="Answer buttons">
+        <div className={`cta-stage ${introComplete ? "cta-stage-visible" : ""}`} aria-label="Answer buttons">
           <button
-            className="choice-button yes-button"
-            disabled={isCelebrating}
-            onClick={sayYes}
+            className="cta-button accept-button"
+            disabled={isCelebrating || !introComplete}
+            onClick={acceptSideRequest}
             type="button"
           >
-            yes
+            Accept Side Request 🎟️
           </button>
           <button
-            className="choice-button no-button"
-            onClick={moveNoButton}
-            onMouseEnter={moveNoButton}
-            style={{ left: noPosition.left, top: noPosition.top, transform: `scale(${noScale})` }}
+            className="cta-button convince-button"
+            disabled={!introComplete}
+            onClick={() => setStep("convince")}
             type="button"
           >
-            no
+            Need more convincing 🤔
           </button>
         </div>
       </section>

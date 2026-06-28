@@ -47,7 +47,6 @@ button {
   overflow: hidden;
 }
 
-.page-shell::before,
 .page-shell::after {
   position: fixed;
   z-index: 0;
@@ -55,13 +54,6 @@ button {
   font-size: 54px;
   font-weight: 900;
   pointer-events: none;
-}
-
-.page-shell::before {
-  content: "♡";
-  top: 24px;
-  right: 24px;
-  transform: rotate(16deg);
 }
 
 .page-shell::after {
@@ -96,6 +88,16 @@ button {
   border-radius: 8px;
   box-shadow: var(--shadow);
   transform: rotate(-1.2deg);
+}
+
+.story-letter {
+  min-height: 360px;
+}
+
+.compact-letter {
+  min-height: 300px;
+  display: grid;
+  align-content: center;
 }
 
 .letter::before {
@@ -147,16 +149,6 @@ button {
   transform: rotate(-9deg);
 }
 
-.letter-kicker {
-  position: relative;
-  z-index: 1;
-  margin: 18px 0 22px;
-  color: var(--pink-dark);
-  font-family: "Bradley Hand", "Comic Sans MS", ui-rounded, cursive;
-  font-size: 31px;
-  line-height: 1;
-}
-
 .letter p {
   position: relative;
   z-index: 1;
@@ -165,50 +157,20 @@ button {
   line-height: 1.45;
 }
 
-.reveal-line {
-  opacity: 0;
-  transform: translateY(12px);
-  animation: letterLineIn 720ms ease forwards;
-}
-
-.letter-kicker.reveal-line {
-  animation-delay: 250ms;
-}
-
-.letter p.reveal-line {
-  animation-delay: 950ms;
-}
-
-.letter .question.reveal-line {
-  animation-delay: 1650ms;
-  animation-duration: 820ms;
-}
-
-.signature.reveal-line {
-  animation-delay: 2550ms;
-}
-
-@keyframes letterLineIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .reveal-line {
-    opacity: 1;
-    transform: none;
+  .confetti-piece {
+    animation-duration: 1ms;
+  }
+
+  .intro-line {
     animation: none;
   }
 
-  .confetti-piece {
-    animation-duration: 1ms;
+  .reward-page,
+  .cta-stage {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
   }
 }
 
@@ -219,19 +181,158 @@ button {
   font-weight: 900;
 }
 
-.signature {
+.intro-sequence {
   position: relative;
   z-index: 1;
-  margin-top: 26px;
-  font-family: "Bradley Hand", "Comic Sans MS", ui-rounded, cursive;
-  font-size: 34px;
-  color: #4b9f84;
-  text-align: right;
+  min-height: 276px;
+  display: grid;
+  place-items: center;
+  text-align: center;
 }
 
-.button-stage {
+.intro-line {
+  position: absolute;
+  width: min(100%, 310px);
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.22;
+  font-weight: 950;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: introLineCycle 3s ease both;
+}
+
+.intro-line-two {
+  animation-delay: 3s;
+}
+
+.intro-line-three {
+  animation-delay: 6s;
+}
+
+@keyframes introLineCycle {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  16%,
+  78% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.reward-page {
+  position: absolute;
+  inset: 54px 26px 28px;
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: opacity 800ms ease, transform 800ms ease;
+}
+
+.reward-page-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.reward-page h1 {
+  margin: 0 0 18px;
+  color: var(--pink-dark);
+  font-family: "Bradley Hand", "Comic Sans MS", ui-rounded, cursive;
+  font-size: 32px;
+  line-height: 1.05;
+}
+
+.reward-page ul {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reward-page li {
+  font-size: 19px;
+  line-height: 1.35;
+  font-weight: 850;
+}
+
+.letter-divider {
+  margin-top: 18px;
+  color: rgba(43, 32, 40, 0.42);
+  text-align: center;
+  font-size: 24px;
+}
+
+.single-question {
   position: relative;
-  height: 140px;
+  z-index: 1;
+  margin: 34px 0 24px;
+  text-align: center;
+}
+
+.cta-stage,
+.convince-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 12px;
+}
+
+.cta-stage {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 600ms ease, transform 600ms ease;
+}
+
+.cta-stage-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.cta-button {
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: 0;
+  box-shadow: 0 14px 30px rgba(239, 79, 152, 0.24);
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+}
+
+.cta-button:active {
+  transform: scale(0.97);
+}
+
+.cta-button:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+}
+
+.accept-button {
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+}
+
+.convince-button {
+  background: linear-gradient(135deg, #8edcc5, #4bb897);
 }
 
 .celebration-burst {
@@ -277,38 +378,6 @@ button {
       rotate(var(--confetti-rotate))
       scale(1);
   }
-}
-
-.choice-button {
-  position: absolute;
-  min-width: 132px;
-  height: 58px;
-  border: 0;
-  border-radius: 999px;
-  color: #fff;
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 0;
-  box-shadow: 0 14px 30px rgba(239, 79, 152, 0.28);
-  cursor: pointer;
-  transition: transform 180ms ease, left 220ms ease, top 220ms ease, box-shadow 180ms ease;
-}
-
-.choice-button:active {
-  transform: scale(0.95);
-}
-
-.yes-button {
-  left: 22px;
-  top: 32px;
-  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
-}
-
-.no-button {
-  left: 182px;
-  top: 32px;
-  background: linear-gradient(135deg, #8edcc5, #4bb897);
-  transform-origin: center;
 }
 
 .movie-wrap {
