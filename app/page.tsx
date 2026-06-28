@@ -54,6 +54,8 @@ const confettiPieces = [
   { x: 8, y: -122, rotate: 36, color: "#7dd7ff" }
 ];
 
+const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
+
 export default function Home() {
   const [step, setStep] = useState<Step>("invite");
   const [noPosition, setNoPosition] = useState({ left: 182, top: 32 });
@@ -104,15 +106,19 @@ export default function Home() {
     setError("");
 
     try {
-      const response = await fetch("/api/rsvp", {
+      const payload = {
+        movie: selectedMovie,
+        note,
+        from: "Dear Enie movie invite",
+        submittedAt: new Date().toISOString()
+      };
+      const response = await fetch(formspreeEndpoint || "/api/rsvp", {
         method: "POST",
         headers: {
+          Accept: "application/json",
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          movie: selectedMovie,
-          note
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
