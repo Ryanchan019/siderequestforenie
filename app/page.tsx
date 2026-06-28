@@ -188,7 +188,7 @@ export default function Home() {
             onClick={submitChoice}
             type="button"
           >
-            {isSubmitting ? "saving..." : "send to Ryan"}
+            {isSubmitting ? "saving..." : "send"}
           </button>
           {error ? <p className="error-text">{error}</p> : null}
         </section>
