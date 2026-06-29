@@ -1046,13 +1046,6 @@ button {
   animation: missionReveal 900ms ease 2.7s forwards;
 }
 
-.thank-you .mission-smile {
-  margin-top: 12px;
-  font-size: 30px;
-  line-height: 1;
-  animation-delay: 3s;
-}
-
 @keyframes missionLoad {
   0% {
     transform: scaleX(0);

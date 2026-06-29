@@ -249,10 +249,9 @@ export default function Home() {
             <div className="mission-progress" aria-label="Mission upload progress">
               <span />
             </div>
-            <h1>mission accepted</h1>
+            <h1>GOT IT!</h1>
             <p>checking popcorn availability...</p>
-            <p>estimated review time: 1-2 bussiness time</p>
-            <p className="mission-smile" aria-label="smile">🙂</p>
+            <p>estimated review time: 1-2 bussiness time 😊</p>
           </div>
         </section>
       </main>
