@@ -246,7 +246,13 @@ export default function Home() {
         {renderMusicControl()}
         <section className="movie-wrap">
           <div className="thank-you">
-            <h1>got it</h1>
+            <div className="mission-progress" aria-label="Mission upload progress">
+              <span />
+            </div>
+            <h1>mission accepted</h1>
+            <p>checking popcorn availability...</p>
+            <p>estimated review time: 1-2 bussiness time</p>
+            <p className="mission-smile" aria-label="smile">🙂</p>
           </div>
         </section>
       </main>
