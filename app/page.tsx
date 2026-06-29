@@ -112,7 +112,7 @@ export default function Home() {
         >
           <span className="cd-hole" />
         </button>
-        <p className="music-note">play a song that u don't understand haha</p>
+        <p className="music-note">play a song u won’t understand the lyrics haha</p>
       </div>
     );
   }
@@ -405,7 +405,7 @@ export default function Home() {
                 </ul>
               </div>
               <div className={`side-request-page ${invitePage === "question" ? "side-request-page-visible" : ""}`}>
-                <p className="question side-request-question">so do u wanna watch movie with me this week?</p>
+                <p className="question side-request-question">So… would you like to watch a movie with me this week? 🍿</p>
               </div>
               <div className="signature fixed-signature">Ryan</div>
             </>
